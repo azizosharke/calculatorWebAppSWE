@@ -5,9 +5,6 @@ precedence = {')': 0, '(': 0, '+': 1, '-': 1, '*': 2, '/': 2, '^': 3}
 
 def is_number(token):
     return str(token).replace('.', '').isdigit()
-
-
-
 def is_operator(token):
     return token in ['+', '-', '*', '/', '^', '(', ')']
 
@@ -26,3 +23,5 @@ def operation(num1, operator, num2):
             exit()
     elif operator == "^":
         return num1 ** num2
+
+
