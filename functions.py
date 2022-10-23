@@ -1,121 +1,158 @@
-from sys import exit
+from utility import is_number, is_operator
 
-pre = {')': 0, '(': 0, '+': 1, '-': 1, '*': 2, '/': 2, '^': 3}
-
-# Function to check if a given character is a number.
-# returns true/false.
-def is_number(token):
-    return str(token).replace('.', '').isdigit()
-
-# Function to check if a given character is an operator.
-# returns true/false.
-def is_operator(token):
-    return token in ['+', '-', '*', '/', '^', '(', ')']
-
-# Function to check the operation and division by 0 .
-# returns the results .
-def operation(num1, operator, num2):
-    if operator == "+":
-        return num1 + num2
-    elif operator == "-":
-        return num1 - num2
-    elif operator == "*":
-        return num1 * num2
-    elif operator == "/":
-        try:
-            return num1 / num2
-        except ZeroDivisionError:
-            print("DIVISION BY 0 ERROR.")
-            exit()
-    elif operator == "^":
-        return num1 ** num2
-
-# Function to solve a mathematical equation
-# Supports (), +, -, *, /, ^, and floating point numbers.
-def calculator(equation: object) -> object:
-    list = list_conversion(equation)
-    for input in list:
-        if is_number(input) or is_operator(input):
-            continue
-        print('Invalid token: ' + input)
-        exit()
-    return floating_numbers(string_conversion(equation))  
-
-# Function to solve the expression in a list . Takes a list form and outputs a floating point number.
-def floating_numbers(stringInput):
-    global m, n
-    list = []
-    for number in stringInput:
-        if not is_number(number):
-            try:
-                n = list.pop()
-                m = list.pop()
-            except IndexError:
-                print("Invalid expression ! ")
-                exit()
-            list.append(operation(m, number, n))
-        else:
-            list.append(number)
-    return list.pop()
-
-# Function that converts a string containing a mathematical expression into a list in Reverse Polish Notation
-
-def string_conversion(calc):
-    expression = list_conversion(calc)
-    result = []
-    list = []
-    for input in expression:
-        if not is_number(input):
-            if input == '(':
-                list.insert(0, input)
-            elif input == ')' and list:
-                while list[0] != '(' and list:
-                    result.append(list[0])
-                    del list[0]
-                if list and list[0] == '(':
-                    pass
-                else:
-                    print("Invalid formatting of parentheses in expression.")
-                    exit()
-                del list[0]
-            else:
-                if not list:
-                    pass
-                else:
-                    while (list and
-                           (input != '^' and pre.get(input) <= pre.get(list[0])) or
-                           (input == '^' and pre.get(input) < pre.get(list[0]))):
-                        result.append(list[0])
-                        del list[0]
-                list.insert(0, input)
-        else:
-            result.append(input)
-    while list:
-        result.append(list[0])
-        del list[0]
-    return result
 
 # Function to convert a string expression into a list
+def convert_to_list(input_to_calc: str):
+    last_num = False
+    # if true, next operator will be applied to number (for negation)
+    next_unary = True
+    negate = False
+    floating = 0    # if number floating (ie not 0), divide char by 10^floating and add to last index
+    expr = []
+    for i, char in enumerate(input_to_calc):
 
-def list_conversion(s):
-    empty_list = []
-    i = 0
-    while i != len(s):
-        if is_number(s[i]):
-            temp = s[i]
-            while True:
-                if i + 1 >= len(s):
-                    temp = float(temp)
-                    empty_list.append(temp)
-                    break
-                elif not (not is_number(s[i + 1]) and not (s[i + 1] == '.')):
-                    temp += s[i + 1]  # | |
-                    i += 1
-                    continue
-                temp = float(temp)
-                empty_list.append(temp)
-                break
-        elif s[i] != ' ':
-            empty_list.append(s[i])
-        i += 1
-    return empty_list
+        if is_number(char):
+            if floating != 0:
+                if char == ".":
+                    return "Error: number contains two decimal points"
+                if negate:
+                    # convert string to number, subtract from end of number in list
+                    expr[-1] = expr[-1] - ((ord(char) - 48) / 10 ** floating)
+                else:
+                    # convert string to number, add onto end of number in list
+                    expr[-1] = expr[-1] + ((ord(char) - 48) / 10 ** floating)
+                floating += 1
+
+            elif last_num:
+                if negate:
+                    # convert string to number, subtract from end of number in list
+                    expr[-1] = expr[-1] * 10 - (ord(char) - 48)
+                else:
+                    # convert string to number, add onto end of number in list
+                    expr[-1] = expr[-1] * 10 + (ord(char) - 48)
+
+            else:
+                last_num = True
+                if negate:
+                    expr.append((ord(char) - 48) * -1)
+                else:
+                    # convert from string to number and add to list
+                    expr.append(ord(char) - 48)
+
+            # if operator follows number, it is not unary
+            next_unary = False
+
+        elif char == " ":
+            last_num = False
+            floating = False
+
+        elif char == "-" and next_unary:
+            try:
+                if not negate and input_to_calc[i+1] == '(':
+                    expr.append('¬')
+                else:
+                    negate = not negate
+            except IndexError:
+                return "Error: ends in -"
+            floating = 0
+
+        elif char == ")":
+            expr.append(char)
+            last_num = False
+            negate = False
+            floating = 0
+
+        elif char == '.':
+            if last_num == "":
+                return "Error: must be a number before decimal point"
+            if floating != 0:
+                return "Error: number contains two decimal points"
+            floating += 1
+
+        elif is_operator(char) or char == '(':
+            expr.append(char)
+            last_num = False
+            negate = False
+            next_unary = True
+            floating = 0
+
+        else:
+            if char == 'e' or char == 'l':
+                expr.append(char)
+            elif char == 'x' and expr[-1] == 'e':
+                expr[-1] = char
+            elif char == 'p' and expr[-1] == 'x':
+                expr[-1] = char
+            elif char == 'o' and expr[-1] == 'l':
+                expr[-1] = char
+            elif char == 'g' and expr[-1] == 'o':
+                expr[-1] = char
+            else:
+                return "Error: unrecognised character: " + str(char)
+
+            last_num = False
+            negate = False
+            next_unary = False
+            floating = 0
+    print(expr)
+    return expr
+
+
+def validate_expression(expression):
+    if is_operator(expression[0]):
+        return "Error: starts with operator"
+    if is_operator(expression[-1]):
+        return "Error: ends with operator"
+
+    last_op = ' '
+    last_num = ''
+    last_bracket = ''
+    last_unary = False
+    brackets = 0
+    for i in expression:
+        if type(i) == int or type(i) == float:
+            if last_num != '':
+                return "Error: two numbers in a row: " + last_num + " and " + str(i)
+            if last_bracket == ')':
+                return "Error: operator needed after right bracket"
+            last_op = ''
+            last_num = str(i)
+            last_bracket = ''
+            last_unary = False
+
+        elif is_operator(i):
+            if last_op != '':
+                return "Error: two operators in a row: " + last_op + " and " + i
+            if last_bracket == '(':
+                return "Error: operator after left bracket"
+            last_op = i
+            last_num = ''
+            last_bracket = ''
+            last_unary = False
+
+        elif i == "(":
+            if last_op == "" and not last_unary:
+                return "Error: operator needed before left bracket"
+            brackets += 1
+            last_op = ''
+            last_num = ''
+            last_bracket = "("
+            last_unary = False
+
+        elif i == ')':
+            if last_op != '':
+                return "Error: operator before right bracket"
+            brackets -= 1
+            last_op = ''
+            last_num = ''
+            last_bracket = ')'
+            last_unary = False
+
+        elif i == 'p' or i == 'g':
+            last_unary = True
+
+    if brackets > 0:
+        return "Error: open left bracket"
+    if brackets < 0:
+        return "Error: open right bracket"
+    return None
