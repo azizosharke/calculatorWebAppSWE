@@ -112,6 +112,24 @@ class Equation(unittest.TestCase):
         for i in range(len(to_test)):
             self.assertEqual(validate_expression(to_test[i]), expected[i])
 
+    def test_handle_exp_log(self):
+        to_test = [['g', '(', 3, ')'],
+                   [13, '+', 'g', '(', 13, '+', '(', 3, '*', 23, ')', ')'],
+                   ['g', '(', 'g', '(', 3, ')', ')'],
+                   ['g', '(', 3, '+', 'g', '(', 3, ')', ')'],
+                   ['p', '(', 3, ')'],
+                   ['p', '(', 'p', '(', 2, ')', '-', 2, ')']]
+
+        expected = [[1.0986122886681098],
+                    [13, '+', 4.406719247264253],
+                    [0.094],
+                    [1.411],
+                    [20.086],
+                    [218.997]]
+
+        for i in range(len(to_test)):
+            self.assertEqual(handle_log_exp(to_test[i]), expected[i])
+
 
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], exit=False)

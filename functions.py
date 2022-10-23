@@ -1,4 +1,5 @@
 from utility import *
+from math import exp, log
 
 
 # Function to solve a mathematical equation
@@ -12,7 +13,11 @@ def calculator(equation: object) -> object:
     if validation_result is not None:
         return validation_result
     else:
-        result = evaluate(list)
+        partial_result = handle_log_exp(list)
+        if type(partial_result) == str:
+            return partial_result
+
+        result = evaluate(partial_result)
         if type(result) == str:
             return result
         elif type(result) == int or type(result) == float:
@@ -189,3 +194,39 @@ def evaluate(expr):
         if err is not None:
             return err
     return val_stack.pop()
+
+
+def handle_log_exp(list):
+
+    partial_result = []
+    i = 0
+    while i < len(list):
+        if list[i] == 'p' or list[i] == 'g':
+            part = []
+            i += 1
+            if list[i] != '(':
+                return "Error: brackets should follow log or exp"
+
+            brackets = 1
+            while brackets != 0:
+                i += 1
+                if i >= len(list):
+                    return "Error: open left bracket"
+                elif list[i] == '(':
+                    brackets += 1
+                elif list[i] == ')':
+                    brackets -= 1
+                else:
+                    part.append(list[i])
+
+            handled_part = handle_log_exp(part)     # recursive call to function to handle nested log/exp
+            result = evaluate(handled_part)
+            if list[i] == 'p':
+                partial_result.append(exp(result))
+            else:
+                partial_result.append(log(result))
+        else:
+            partial_result.append(list[i])
+        i += 1
+
+    return partial_result
