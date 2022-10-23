@@ -1,5 +1,7 @@
 from functions import *
 import unittest
+
+
 class number(unittest.TestCase):
 
     def test_one(self):
@@ -67,6 +69,48 @@ class Operations(unittest.TestCase):
         num2 = 2
         expected = 81
         self.assertEqual(operation(num1, operator, num2), expected)
+
+
+class Equation(unittest.TestCase):
+    def test_string_conversion(self):
+        test_dict = {"2 + 2": [2, 2, '+'],
+                     "6 + 7 * 8": [6, 7, 8, '*', '+'],
+                     "(7+8)*(6 - 4)": [7, 8, '+', 6, 4, '-', '*'],
+                     "(6+3.3)^(8/2)": [6, 3.3, '+', 8, 2, '/', '^'],
+                     "2+191/21+8": [2, 191, 21, '/', '+', 8, '+']
+                     }
+        for exp in test_dict:
+            self.assertEqual(string_conversion(exp), test_dict[exp])
+
+    def test_list_conversion(self):
+        test_dict = {"2 + 2": [2, '+', 2],
+                     "5 + 6 * 7": [5, '+', 6, '*', 7],
+                     "(7+8)*(6 - 4)": ['(', 7, '+', 8, ')', '*', '(', 6, '-', 4, ')'],
+                     "(6+3.3)^(8/2)": ['(', 6, '+', 3.3, ')', '^', '(', 8, '/', 2, ')'],
+                     "2+191/21+8": [2, '+', 191, '/', 21, '+', 8]
+                     }
+        for expression in test_dict:
+            self.assertEqual(list_conversion(expression), test_dict[expression])
+
+    def test_output(self):
+        test_dict = {(2, 2, '+'): 4,
+                     (6, 7, 8, '*', '+'): 62,
+                     (7, 8, '+', 6, 4, '-', '*'): 30,
+                     (1, 2.5, '+', 6, 3, '/', '^'): 12.25,
+                     (1, 102, 17, '/', '+', 4, '+'): 11
+                     }
+        for i in test_dict:
+            self.assertEqual(floating_numbers(list(i)), test_dict[i])
+
+    def test_calculator(self):
+        test_dict = {"2 + 2": 4,
+                     "6 + 7 * 8": 62,
+                     "(7+8)*(6 - 4)": 30,
+                     "(1+2.5)^(6/3)": 12.25,
+                     "1+102/17+4": 11
+                     }
+        for exp in test_dict:
+            self.assertEqual(calculator(exp), test_dict[exp])
 
 
 if __name__ == '__main__':
