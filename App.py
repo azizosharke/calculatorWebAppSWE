@@ -1,4 +1,4 @@
-from functions import *
+from functions import calculator
 
 
 if __name__ == "__main__":

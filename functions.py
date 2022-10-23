@@ -1,4 +1,4 @@
-from utility import is_number, is_operator, operation, get_precedence
+from utility import *
 
 
 # Function to solve a mathematical equation

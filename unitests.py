@@ -1,8 +1,9 @@
 from functions import *
+from utility import *
 import unittest
 
 
-class number(unittest.TestCase):
+class Number(unittest.TestCase):
 
     def test_one(self):
         testcase = "eydfhsjdfhsjdfhjsdhfjshdfjsdfsdf9"
@@ -72,35 +73,6 @@ class Operations(unittest.TestCase):
 
 
 class Equation(unittest.TestCase):
-    def test_string_conversion(self):
-        test_dict = {"2 + 2": [2, 2, '+'],
-                     "6 + 7 * 8": [6, 7, 8, '*', '+'],
-                     "(7+8)*(6 - 4)": [7, 8, '+', 6, 4, '-', '*'],
-                     "(6+3.3)^(8/2)": [6, 3.3, '+', 8, 2, '/', '^'],
-                     "2+191/21+8": [2, 191, 21, '/', '+', 8, '+']
-                     }
-        for exp in test_dict:
-            self.assertEqual(string_conversion(exp), test_dict[exp])
-
-    def test_list_conversion(self):
-        test_dict = {"2 + 2": [2, '+', 2],
-                     "5 + 6 * 7": [5, '+', 6, '*', 7],
-                     "(7+8)*(6 - 4)": ['(', 7, '+', 8, ')', '*', '(', 6, '-', 4, ')'],
-                     "(6+3.3)^(8/2)": ['(', 6, '+', 3.3, ')', '^', '(', 8, '/', 2, ')'],
-                     "2+191/21+8": [2, '+', 191, '/', 21, '+', 8]
-                     }
-        for expression in test_dict:
-            self.assertEqual(list_conversion(expression), test_dict[expression])
-
-    def test_output(self):
-        test_dict = {(2, 2, '+'): 4,
-                     (6, 7, 8, '*', '+'): 62,
-                     (7, 8, '+', 6, 4, '-', '*'): 30,
-                     (1, 2.5, '+', 6, 3, '/', '^'): 12.25,
-                     (1, 102, 17, '/', '+', 4, '+'): 11
-                     }
-        for i in test_dict:
-            self.assertEqual(floating_numbers(list(i)), test_dict[i])
 
     def test_calculator(self):
         test_dict = {"2 + 2": 4,
@@ -111,6 +83,32 @@ class Equation(unittest.TestCase):
                      }
         for exp in test_dict:
             self.assertEqual(calculator(exp), test_dict[exp])
+
+    def test_convert_to_list(self):
+        test_dict = {"2 + 2": [2, '+', 2],
+                     "5 + 6 * 7": [5, '+', 6, '*', 7],
+                     "(7+8)*(6 - 4)": ['(', 7, '+', 8, ')', '*', '(', 6, '-', 4, ')'],
+                     "(6+3.3)^(8/2)": ['(', 6, '+', 3.3, ')', '^', '(', 8, '/', 2, ')'],
+                     "2+191/21+8": [2, '+', 191, '/', 21, '+', 8]
+                     }
+        for expression in test_dict:
+            self.assertEqual(convert_to_list(expression), test_dict[expression])
+
+    def test_validate_expression(self):
+        to_test = [[2.4, '*', -2],
+                   ['(', 6, '+', 3.3, ')', '^', '(', 8, '/', 2, ')'],
+                   [2, '+', '/', 21],
+                   ['(', 6, '+', 3.3],
+                   [5, '/', '(', 3, '-', 3, ')']]
+
+        expected = [None,
+                    None,
+                    "Error: two operators in a row: + and /",
+                    "Error: open left bracket",
+                    "Error: divide by zero"]
+
+        for i in range(len(to_test)):
+            self.assertEqual(validate_expression(to_test[i]), expected[i])
 
 
 if __name__ == '__main__':
