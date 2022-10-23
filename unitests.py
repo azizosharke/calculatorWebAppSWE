@@ -81,10 +81,11 @@ class Equation(unittest.TestCase):
                      "(7+8)*(6 - 4)": 30,
                      "(1+2.5)^(6/3)": 12.25,
                      "1+102/17+4": 11,
+                     "4.45 * -(45 + log(3 + exp(2)) / 5)": -202.333,
                      "5/(3-3)": "Error: division by zero"
                      }
-        for exp in test_dict:
-            self.assertEqual(calculator(exp), test_dict[exp])
+        for expression in test_dict:
+            self.assertEqual(calculator(expression), test_dict[expression])
 
     def test_convert_to_list(self):
         test_dict = {"2 + 2": [2, '+', 2],
@@ -92,6 +93,8 @@ class Equation(unittest.TestCase):
                      "(7+8)*(6 - 4)": ['(', 7, '+', 8, ')', '*', '(', 6, '-', 4, ')'],
                      "(6+3.3)^(8/2)": ['(', 6, '+', 3.3, ')', '^', '(', 8, '/', 2, ')'],
                      "2+191/21+8": [2, '+', 191, '/', 21, '+', 8],
+                     "4 * -(5+3)": [4, '*', '¬', '(', 5, '+', 3, ')'],
+                     "4 * --(5+3)": [4, '*', '(', 5, '+', 3, ')'],
                      "3+1.2.3": "Error: number contains two decimal points"
                      }
         for expression in test_dict:
@@ -113,23 +116,27 @@ class Equation(unittest.TestCase):
         for i in range(len(to_test)):
             self.assertEqual(validate_expression(to_test[i]), expected[i])
 
-    def test_handle_exp_log(self):
+    def test_handle_unary(self):
         to_test = [['g', '(', 3, ')'],
                    [13, '+', 'g', '(', 13, '+', '(', 3, '*', 23, ')', ')'],
                    ['g', '(', 'g', '(', 3, ')', ')'],
                    ['g', '(', 3, '+', 'g', '(', 3, ')', ')'],
                    ['p', '(', 3, ')'],
-                   ['p', '(', 'p', '(', 2, ')', '-', 2, ')', '-', 5]]
+                   ['p', '(', 'p', '(', 2, ')', '-', 2, ')', '-', 5],
+                   [3, '*', '¬', '(', 4, '+', 10, ')'],
+                   [2, '*', '¬', '(', 10, '/', '¬', '(', 8, '-', 3, ')', ')']]
 
         expected = [[1.0986122886681098],
                     [13, '+', 4.406719247264253],
                     [0.0940478276166991],
                     [1.4106484502391472],
                     [20.085536923187668],
-                    [218.99657686275216, '-', 5]]
+                    [218.99657686275216, '-', 5],
+                    [3, '*', -14],
+                    [2, '*', 2]]
 
         for i in range(len(to_test)):
-            self.assertEqual(handle_log_exp(to_test[i]), expected[i])
+            self.assertEqual(handle_unary(to_test[i]), expected[i])
 
 
 if __name__ == '__main__':

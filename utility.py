@@ -13,6 +13,12 @@ def is_operator(token):
     return token in ['+', '-', '*', '/', '^']
 
 
+# Function to check if a given character is a unary operator.
+# returns true/false.
+def is_unary(token):
+    return token in ['p', 'g', '¬']     # p is exp, g is log, ¬ is negation
+
+
 # Function to check the operation and division by 0 .
 # returns the results .
 def operation(num1, operator, num2):

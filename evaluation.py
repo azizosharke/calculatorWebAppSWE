@@ -1,5 +1,5 @@
 from functions import convert_to_list, validate_expression
-from utility import get_precedence, operation
+from utility import get_precedence, operation, is_unary
 from math import exp, log
 
 
@@ -14,7 +14,7 @@ def calculator(equation: object) -> object:
     if validation_result is not None:
         return validation_result
     else:
-        partial_result = handle_log_exp(list)
+        partial_result = handle_unary(list)
         if type(partial_result) == str:
             return partial_result
 
@@ -67,11 +67,11 @@ def evaluate(expr):
     return val_stack.pop()
 
 
-def handle_log_exp(list):
+def handle_unary(list):
     partial_result = []
     i = 0
     while i < len(list):
-        if list[i] == 'p' or list[i] == 'g':
+        if is_unary(list[i]):
             unary = list[i]
             part = []
             i += 1
@@ -90,12 +90,14 @@ def handle_log_exp(list):
                 if brackets != 0:
                     part.append(list[i])
 
-            handled_part = handle_log_exp(part)  # recursive call to function to handle nested log/exp
+            handled_part = handle_unary(part)  # recursive call to function to handle nested log/exp
             result = evaluate(handled_part)
             if unary == 'p':
                 partial_result.append(exp(result))
-            else:
+            elif unary == 'g':
                 partial_result.append(log(result))
+            else:
+                partial_result.append(result * -1)
         else:
             partial_result.append(list[i])
         i += 1

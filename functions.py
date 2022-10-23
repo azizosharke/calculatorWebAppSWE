@@ -9,7 +9,7 @@ def convert_to_list(input_to_calc: str):
     negate = False
     floating = 0    # if number floating (ie not 0), divide char by 10^floating and add to last index
     expr = []
-    for char in input_to_calc:
+    for i, char in enumerate(input_to_calc):
 
         if is_number(char):
             if floating != 0:
@@ -47,7 +47,13 @@ def convert_to_list(input_to_calc: str):
             floating = False
 
         elif char == "-" and next_unary:
-            negate = not negate
+            try:
+                if not negate and input_to_calc[i+1] == '(':
+                    expr.append('¬')
+                else:
+                    negate = not negate
+            except IndexError:
+                return "Error: ends in -"
             floating = 0
 
         elif char == ")":
@@ -67,7 +73,7 @@ def convert_to_list(input_to_calc: str):
             expr.append(char)
             last_num = False
             negate = False
-            next_unary = False
+            next_unary = True
             floating = 0
 
         else:

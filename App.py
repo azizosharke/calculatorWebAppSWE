@@ -2,12 +2,12 @@ from evaluation import calculator
 
 
 if __name__ == "__main__":
-    running = True
-    while running:
-        result = calculator(input("Enter your Expression Here: "))
-        if result == "quit":
-            running = False
-        elif type(result) == str:
+    while True:
+        expression = input("Enter your Expression Here: ")
+        if expression == "quit":
+            break
+        result = calculator(expression)
+        if type(result) == str:
             print(result)
         else:
             print(f'Result: {result}')
