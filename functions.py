@@ -2,14 +2,18 @@ from sys import exit
 
 pre = {')': 0, '(': 0, '+': 1, '-': 1, '*': 2, '/': 2, '^': 3}
 
-
+# Function to check if a given character is a number.
+# returns true/false.
 def is_number(token):
     return str(token).replace('.', '').isdigit()
 
-
+# Function to check if a given character is an operator.
+# returns true/false.
 def is_operator(token):
     return token in ['+', '-', '*', '/', '^', '(', ')']
 
+# Function to check the operation and division by 0 .
+# returns the results .
 def operation(num1, operator, num2):
     if operator == "+":
         return num1 + num2
@@ -26,7 +30,8 @@ def operation(num1, operator, num2):
     elif operator == "^":
         return num1 ** num2
 
-
+# Function to solve a mathematical equation
+# Supports (), +, -, *, /, ^, and floating point numbers.
 def calculator(equation: object) -> object:
     list = list_conversion(equation)
     for input in list:
@@ -36,7 +41,7 @@ def calculator(equation: object) -> object:
         exit()
     return floating_numbers(string_conversion(equation))  
 
-
+# Function to solve the expression in a list . Takes a list form and outputs a floating point number.
 def floating_numbers(stringInput):
     global m, n
     list = []
@@ -53,6 +58,7 @@ def floating_numbers(stringInput):
             list.append(number)
     return list.pop()
 
+# Function that converts a string containing a mathematical expression into a list in Reverse Polish Notation
 
 def string_conversion(calc):
     expression = list_conversion(calc)
@@ -89,6 +95,7 @@ def string_conversion(calc):
         del list[0]
     return result
 
+# Function to convert a string expression into a list
 
 def list_conversion(s):
     empty_list = []
