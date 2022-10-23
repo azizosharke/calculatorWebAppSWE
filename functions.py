@@ -1,36 +1,4 @@
-from sys import exit
-
-pre = {')': 0, '(': 0, '+': 1, '-': 1, '*': 2, '/': 2, '^': 3}
-
-
-# Function to check if a given character is a number.
-# returns true/false.
-def is_number(token):
-    return str(token).replace('.', '').replace('-', '').isdigit()
-
-
-# Function to check if a given character is an operator.
-# returns true/false.
-def is_operator(token):
-    return token in ['+', '-', '*', '/', '^']
-
-
-# Function to check the operation and division by 0 .
-# returns the results .
-def operation(num1, operator, num2):
-    if operator == "+":
-        return num1 + num2
-    elif operator == "-":
-        return num1 - num2
-    elif operator == "*":
-        return num1 * num2
-    elif operator == "/":
-        try:
-            return num1 / num2
-        except ZeroDivisionError:
-            return "Error: division by zero"
-    elif operator == "^":
-        return num1 ** num2
+from utility import is_number, is_operator, operation, get_precedence
 
 
 # Function to solve a mathematical equation
@@ -40,7 +8,7 @@ def calculator(equation: object) -> object:
     if type(list) == str:
         return list
 
-    validation_result = validateExpression(list)
+    validation_result = validate_expression(list)
     if validation_result is not None:
         return validation_result
     else:
@@ -110,11 +78,11 @@ def convert_to_list(input_to_calc: str):
             negate = False
             next_unary = True
             floating = 0
-    print(expr)
+
     return expr
 
 
-def validateExpression(expression):
+def validate_expression(expression):
     if is_operator(expression[0]):
         return "Error: starts with operator"
     if is_operator(expression[-1]):
@@ -165,21 +133,7 @@ def validateExpression(expression):
     return None
 
 
-def getPrecedence(token):
-    if token == "+":
-        return 1
-    elif token == "-":
-        return 1
-    elif token == "*":
-        return 2
-    elif token == "/":
-        return 2
-    elif token == "^":
-        return 3
-    return -1
-
-
-def performOperation(val_stack, op_stack):
+def perform_operation(val_stack, op_stack):
     val2 = val_stack.pop()
     val1 = val_stack.pop()
     op = op_stack.pop()
@@ -200,19 +154,19 @@ def evaluate(expr):
             op_stack.append(token)
         elif token == ")":
             while len(op_stack) != 0 and op_stack[-1] != "(":
-                err = performOperation(val_stack, op_stack)
+                err = perform_operation(val_stack, op_stack)
                 if err is not None:
                     return err
             op_stack.pop()  # discard "("
         else:
-            while len(op_stack) != 0 and op_stack[-1] != "(" and getPrecedence(op_stack[-1]) >= getPrecedence(token):
-                err = performOperation(val_stack, op_stack)
+            while len(op_stack) != 0 and op_stack[-1] != "(" and get_precedence(op_stack[-1]) >= get_precedence(token):
+                err = perform_operation(val_stack, op_stack)
                 if err is not None:
                     return err
             op_stack.append(token)
 
     while len(op_stack) != 0:
-        err = performOperation(val_stack, op_stack)
+        err = perform_operation(val_stack, op_stack)
         if err is not None:
             return err
     return val_stack.pop()
