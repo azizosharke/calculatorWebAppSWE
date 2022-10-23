@@ -29,6 +29,7 @@ def convert_to_list(input_to_calc: str):
     floating = 0    # if number floating (ie not 0), divide char by 10^floating and add to last index
     expr = []
     for char in input_to_calc:
+
         if is_number(char):
             if floating != 0:
                 if char == ".":
@@ -74,13 +75,31 @@ def convert_to_list(input_to_calc: str):
             if floating != 0:
                 return "Error: number contains two decimal points"
             floating += 1
-        else:
+        elif is_operator(char) or char == '(':
             expr.append(char)
             last_num = False
             negate = False
-            next_unary = True
+            next_unary = False
             floating = 0
+        else:
+            if char == 'e' or char == 'l':
+                expr.append(char)
+            elif char == 'x' and expr[-1] == 'e':
+                expr[-1] = char
+            elif char == 'p' and expr[-1] == 'x':
+                expr[-1] = char
+            elif char == 'o' and expr[-1] == 'l':
+                expr[-1] = char
+            elif char == 'g' and expr[-1] == 'o':
+                expr[-1] = char
+            else:
+                return "Error: unrecognised character: " + str(char)
 
+            last_num = False
+            negate = False
+            next_unary = False
+            floating = 0
+    print(expr)
     return expr
 
 
@@ -125,8 +144,6 @@ def validate_expression(expression):
             last_op = ""
             last_num = ""
             last_bracket = ")"
-        else:
-            return "Error: unrecognised character: " + str(i)
 
     if brackets > 0:
         return "Error: open left bracket"
