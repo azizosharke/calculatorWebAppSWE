@@ -79,7 +79,8 @@ class Equation(unittest.TestCase):
                      "6 + 7 * 8": 62,
                      "(7+8)*(6 - 4)": 30,
                      "(1+2.5)^(6/3)": 12.25,
-                     "1+102/17+4": 11
+                     "1+102/17+4": 11,
+                     "5/(3-3)": "Error: division by zero"
                      }
         for exp in test_dict:
             self.assertEqual(calculator(exp), test_dict[exp])
@@ -89,23 +90,24 @@ class Equation(unittest.TestCase):
                      "5 + 6 * 7": [5, '+', 6, '*', 7],
                      "(7+8)*(6 - 4)": ['(', 7, '+', 8, ')', '*', '(', 6, '-', 4, ')'],
                      "(6+3.3)^(8/2)": ['(', 6, '+', 3.3, ')', '^', '(', 8, '/', 2, ')'],
-                     "2+191/21+8": [2, '+', 191, '/', 21, '+', 8]
+                     "2+191/21+8": [2, '+', 191, '/', 21, '+', 8],
+                     "3+1.2.3": "Error: number contains two decimal points"
                      }
         for expression in test_dict:
             self.assertEqual(convert_to_list(expression), test_dict[expression])
 
     def test_validate_expression(self):
-        to_test = [[2.4, '*', -2],
-                   ['(', 6, '+', 3.3, ')', '^', '(', 8, '/', 2, ')'],
+        to_test = [['(', 6, '+', 3.3, ')', '^', '(', 8, '/', 2, ')'],
                    [2, '+', '/', 21],
                    ['(', 6, '+', 3.3],
-                   [5, '/', '(', 3, '-', 3, ')']]
+                   ['(', 6, '+', ')'],
+                   ['/', '(', 3, '-', 1, ')']]
 
         expected = [None,
-                    None,
                     "Error: two operators in a row: + and /",
                     "Error: open left bracket",
-                    "Error: divide by zero"]
+                    "Error: operator before right bracket",
+                    "Error: starts with operator"]
 
         for i in range(len(to_test)):
             self.assertEqual(validate_expression(to_test[i]), expected[i])

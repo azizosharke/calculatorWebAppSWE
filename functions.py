@@ -13,7 +13,9 @@ def calculator(equation: object) -> object:
         return validation_result
     else:
         result = evaluate(list)
-        if type(result) == int or type(result) == float:
+        if type(result) == str:
+            return result
+        elif type(result) == int or type(result) == float:
             return round(result, 3)
         return "Error: Complex Result"
 
@@ -30,7 +32,7 @@ def convert_to_list(input_to_calc: str):
         if is_number(char):
             if floating != 0:
                 if char == ".":
-                    return "Error: number has two decimal points"
+                    return "Error: number contains two decimal points"
                 if negate:
                     # convert string to number, subtract from end of number in list
                     expr[-1] = expr[-1] - ((ord(char) - 48) / 10 ** floating)
@@ -70,7 +72,7 @@ def convert_to_list(input_to_calc: str):
             if last_num == "":
                 return "Error: must be a number before decimal point"
             if floating != 0:
-                return "Error: number has two decimal points"
+                return "Error: number contains two decimal points"
             floating += 1
         else:
             expr.append(char)

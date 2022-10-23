@@ -33,6 +33,7 @@ def operation(num1, operator, num2):
 
 def get_precedence(token):
     if token == "+":
+
         return 1
     elif token == "-":
         return 1
