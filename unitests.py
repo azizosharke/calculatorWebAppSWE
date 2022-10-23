@@ -1,3 +1,4 @@
+from evaluation import *
 from functions import *
 from utility import *
 import unittest

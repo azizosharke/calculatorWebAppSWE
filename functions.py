@@ -1,28 +1,4 @@
-from utility import *
-from math import exp, log
-
-
-# Function to solve a mathematical equation
-# Supports (), +, -, *, /, ^, and floating point numbers.
-def calculator(equation: object) -> object:
-    list = convert_to_list(equation)
-    if type(list) == str:
-        return list
-
-    validation_result = validate_expression(list)
-    if validation_result is not None:
-        return validation_result
-    else:
-        partial_result = handle_log_exp(list)
-        if type(partial_result) == str:
-            return partial_result
-
-        result = evaluate(partial_result)
-        if type(result) == str:
-            return result
-        elif type(result) == int or type(result) == float:
-            return round(result, 3)
-        return "Error: Complex Result"
+from utility import is_number, is_operator
 
 
 # Function to convert a string expression into a list
@@ -46,6 +22,7 @@ def convert_to_list(input_to_calc: str):
                     # convert string to number, add onto end of number in list
                     expr[-1] = expr[-1] + ((ord(char) - 48) / 10 ** floating)
                 floating += 1
+
             elif last_num:
                 if negate:
                     # convert string to number, subtract from end of number in list
@@ -53,6 +30,7 @@ def convert_to_list(input_to_calc: str):
                 else:
                     # convert string to number, add onto end of number in list
                     expr[-1] = expr[-1] * 10 + (ord(char) - 48)
+
             else:
                 last_num = True
                 if negate:
@@ -63,29 +41,35 @@ def convert_to_list(input_to_calc: str):
 
             # if operator follows number, it is not unary
             next_unary = False
+
         elif char == " ":
             last_num = False
             floating = False
+
         elif char == "-" and next_unary:
             negate = not negate
             floating = 0
+
         elif char == ")":
             expr.append(char)
             last_num = False
             negate = False
             floating = 0
+
         elif char == '.':
             if last_num == "":
                 return "Error: must be a number before decimal point"
             if floating != 0:
                 return "Error: number contains two decimal points"
             floating += 1
+
         elif is_operator(char) or char == '(':
             expr.append(char)
             last_num = False
             negate = False
             next_unary = False
             floating = 0
+
         else:
             if char == 'e' or char == 'l':
                 expr.append(char)
@@ -127,6 +111,7 @@ def validate_expression(expression):
             last_op = ""
             last_num = str(i)
             last_bracket = ""
+
         elif is_operator(i):
             if last_op != "":
                 return "Error: two operators in a row: " + last_op + " and " + i
@@ -135,6 +120,7 @@ def validate_expression(expression):
             last_op = i
             last_num = ""
             last_bracket = ""
+
         elif i == "(":
             if last_op == "":
                 return "Error: operator needed before left bracket"
@@ -142,6 +128,7 @@ def validate_expression(expression):
             last_op = ""
             last_num = ""
             last_bracket = "("
+
         elif i == ")":
             if last_op != "":
                 return "Error: operator before right bracket"
@@ -155,78 +142,3 @@ def validate_expression(expression):
     if brackets < 0:
         return "Error: open right bracket"
     return None
-
-
-def perform_operation(val_stack, op_stack):
-    val2 = val_stack.pop()
-    val1 = val_stack.pop()
-    op = op_stack.pop()
-    res = operation(val1, op, val2)
-    if type(res) == str:
-        return res
-    val_stack.append(res)
-    return None
-
-
-def evaluate(expr):
-    val_stack = []
-    op_stack = []
-    for token in expr:
-        if type(token) == int or type(token) == float:
-            val_stack.append(token)
-        elif token == "(":
-            op_stack.append(token)
-        elif token == ")":
-            while len(op_stack) != 0 and op_stack[-1] != "(":
-                err = perform_operation(val_stack, op_stack)
-                if err is not None:
-                    return err
-            op_stack.pop()  # discard "("
-        else:
-            while len(op_stack) != 0 and op_stack[-1] != "(" and get_precedence(op_stack[-1]) >= get_precedence(token):
-                err = perform_operation(val_stack, op_stack)
-                if err is not None:
-                    return err
-            op_stack.append(token)
-
-    while len(op_stack) != 0:
-        err = perform_operation(val_stack, op_stack)
-        if err is not None:
-            return err
-    return val_stack.pop()
-
-
-def handle_log_exp(list):
-
-    partial_result = []
-    i = 0
-    while i < len(list):
-        if list[i] == 'p' or list[i] == 'g':
-            part = []
-            i += 1
-            if list[i] != '(':
-                return "Error: brackets should follow log or exp"
-
-            brackets = 1
-            while brackets != 0:
-                i += 1
-                if i >= len(list):
-                    return "Error: open left bracket"
-                elif list[i] == '(':
-                    brackets += 1
-                elif list[i] == ')':
-                    brackets -= 1
-                else:
-                    part.append(list[i])
-
-            handled_part = handle_log_exp(part)     # recursive call to function to handle nested log/exp
-            result = evaluate(handled_part)
-            if list[i] == 'p':
-                partial_result.append(exp(result))
-            else:
-                partial_result.append(log(result))
-        else:
-            partial_result.append(list[i])
-        i += 1
-
-    return partial_result
