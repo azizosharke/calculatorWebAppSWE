@@ -72,6 +72,7 @@ def handle_log_exp(list):
     i = 0
     while i < len(list):
         if list[i] == 'p' or list[i] == 'g':
+            unary = list[i]
             part = []
             i += 1
             if list[i] != '(':
@@ -86,12 +87,12 @@ def handle_log_exp(list):
                     brackets += 1
                 elif list[i] == ')':
                     brackets -= 1
-                else:
+                if brackets != 0:
                     part.append(list[i])
 
             handled_part = handle_log_exp(part)  # recursive call to function to handle nested log/exp
             result = evaluate(handled_part)
-            if list[i] == 'p':
+            if unary == 'p':
                 partial_result.append(exp(result))
             else:
                 partial_result.append(log(result))

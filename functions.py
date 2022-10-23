@@ -98,44 +98,52 @@ def validate_expression(expression):
     if is_operator(expression[-1]):
         return "Error: ends with operator"
 
-    last_op = " "
-    last_num = ""
-    last_bracket = ""
+    last_op = ' '
+    last_num = ''
+    last_bracket = ''
+    last_unary = False
     brackets = 0
     for i in expression:
         if type(i) == int or type(i) == float:
-            if last_num != "":
+            if last_num != '':
                 return "Error: two numbers in a row: " + last_num + " and " + str(i)
-            if last_bracket == ")":
+            if last_bracket == ')':
                 return "Error: operator needed after right bracket"
-            last_op = ""
+            last_op = ''
             last_num = str(i)
-            last_bracket = ""
+            last_bracket = ''
+            last_unary = False
 
         elif is_operator(i):
-            if last_op != "":
+            if last_op != '':
                 return "Error: two operators in a row: " + last_op + " and " + i
-            if last_bracket == "(":
+            if last_bracket == '(':
                 return "Error: operator after left bracket"
             last_op = i
-            last_num = ""
-            last_bracket = ""
+            last_num = ''
+            last_bracket = ''
+            last_unary = False
 
         elif i == "(":
-            if last_op == "":
+            if last_op == "" and not last_unary:
                 return "Error: operator needed before left bracket"
             brackets += 1
-            last_op = ""
-            last_num = ""
+            last_op = ''
+            last_num = ''
             last_bracket = "("
+            last_unary = False
 
-        elif i == ")":
-            if last_op != "":
+        elif i == ')':
+            if last_op != '':
                 return "Error: operator before right bracket"
             brackets -= 1
-            last_op = ""
-            last_num = ""
-            last_bracket = ")"
+            last_op = ''
+            last_num = ''
+            last_bracket = ')'
+            last_unary = False
+
+        elif i == 'p' or i == 'g':
+            last_unary = True
 
     if brackets > 0:
         return "Error: open left bracket"
