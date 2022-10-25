@@ -1,4 +1,4 @@
-# todo-app
+# Calculator-app
 
 ## Project setup
 ```
