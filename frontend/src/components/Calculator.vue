@@ -27,54 +27,40 @@ export default {
   props: {
     msg: String
   },
-
   data() {
     return {
       calculatorValue: '',
-      calculatorElements: ['C','*','/','-',7,8,9,'+',4,5,6,'%',1,2,3,'=',0,'.','log','exp','^','(',')','hi'],
-      operator: null,
-      previousCalculatorValue: '',
+      calculatorElements: ['C','*','/','-',7,8,9,'+',4,5,6,'%',1,2,3,'=',0,'.','log','exp','^','(',')','hi']
     }
   },
-
   methods: {
-    action(n){
+    action(n) {
 
-      /* Append value */
-      if(!isNaN(n) || n === '.'){
+      if (!(['C', '=', 'log', 'exp'].includes(n))) {
         this.calculatorValue += n + '';
       }
 
-      /* Clear value */
-      if(n === 'C'){
+      // Clear button
+      if (n === 'C') {
         this.calculatorValue = '';
       }
-
-      /* Percentage */
+      if (n === 'log') {
+        this.calculatorValue += n + '('
+      }
+      if (n === 'exp') {
+        this.calculatorValue += n + '('
+      }
+      // Equals button
+      if (n === '=') {
+        this.calculatorValue = '';
+      }
       if(n === '%'){
         this.calculatorValue = this.calculatorValue / 100 + '';
       }
-     
-      /* Operators */
-      if(['/','*','-','+'].includes(n)){
-        this.operator = n;
-        this.previousCalculatorValue = this.calculatorValue;
-        this.calculatorValue = '';
-      }
-
-      /* Calculate result using the eval function */
-      if(n === '='){
-        this.calculatorValue = eval(
-          this.previousCalculatorValue + this.operator + this.calculatorValue
-        );
-        this.previousCalculatorValue = '';
-        this.operator = null;
-      }
-
-
     }
   }
 }
+
 </script>
 
 
