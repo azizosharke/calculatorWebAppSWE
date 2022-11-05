@@ -101,7 +101,7 @@ def convert_to_list(input_to_calc: str):
             negate = False
             next_unary = False
             floating = 0
-    print(expr)
+    # print(expr)         # uncomment to see expression
     return expr
 
 
