@@ -48,7 +48,14 @@ def convert_to_list(input_to_calc: str):
 
         elif char == "-" and next_unary:
             try:
-                if not negate and input_to_calc[i+1] == '(':
+                next_bracket = False
+                for j in range(1, len(input_to_calc) - i):
+                    if input_to_calc[i+j] == '(':
+                        next_bracket = True
+                        break
+                    elif input_to_calc[i+j] != ' ':
+                        break
+                if not negate and next_bracket:
                     expr.append('¬')
                 else:
                     negate = not negate
