@@ -2,6 +2,10 @@ FROM python:latest
 
 WORKDIR /app
 
-COPY . /app/
+COPY . .
 
-CMD [ "python", "./main.py" ]
+RUN pip install -r requirements.txt
+
+EXPOSE 5000
+
+CMD [ "python", "app.py" ]
